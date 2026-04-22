@@ -1,6 +1,5 @@
 import pytest
 import requests
-from config import HEADERS
 
 @pytest.mark.products
 def test_all_products_results(all_products):
@@ -21,7 +20,7 @@ def test_products_price_is_positive(all_products):
 
 @pytest.mark.products
 def test_get_single_product(base_url):
-    response = requests.get(f"{base_url}/products/1", headers=HEADERS)
+    response = requests.get(f"{base_url}/products/1")
     product = response.json()
 
     assert response.status_code == 200
@@ -29,18 +28,21 @@ def test_get_single_product(base_url):
 
 @pytest.mark.products
 def test_get_nonexistent_product(base_url):
-    response = requests.get(f"{base_url}/products/9999", headers=HEADERS)
+    response = requests.get(f"{base_url}/products/9999")
 
-    assert response.status_code == 200
+    assert response.status_code == 404
 
 @pytest.mark.products
-@pytest.mark.parametrize ("category", ["electronics", "jewelery", "men's clothing", "women's clothing"])
+@pytest.mark.parametrize ("category", ["beauty",
+    "laptops",
+    "smartphones",
+    "womens-dresses"])
 
 def test_category_returns_products(base_url, category):
-    response = requests.get(f"{base_url}/products/category/{category}", headers=HEADERS)
-    product = response.json()
+    response = requests.get(f"{base_url}/products/category/{category}")
+    products = response.json()["products"]
 
     assert response.status_code == 200
-    assert len(product) > 0
-    for product in product:
+    assert len(products) > 0
+    for product in products:
         assert product["category"] == category
