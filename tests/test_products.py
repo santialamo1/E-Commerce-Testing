@@ -1,5 +1,6 @@
 import pytest
 import requests
+from config import HEADERS
 
 @pytest.mark.products
 def test_all_products_results(all_products):
@@ -19,24 +20,24 @@ def test_products_price_is_positive(all_products):
         assert product["price"] > 0
 
 @pytest.mark.products
-def test_get_single_product(all_products, base_url):
-    response = requests.get(f"{base_url}/products/1")
+def test_get_single_product(base_url):
+    response = requests.get(f"{base_url}/products/1", headers=HEADERS)
     product = response.json()
 
     assert response.status_code == 200
     assert product["id"] == 1
 
 @pytest.mark.products
-def test_get_nonexistent_product(all_products, base_url):
-    response = requests.get(f"{base_url}/products/9999")
+def test_get_nonexistent_product(base_url):
+    response = requests.get(f"{base_url}/products/9999", headers=HEADERS)
 
     assert response.status_code == 200
 
 @pytest.mark.products
 @pytest.mark.parametrize ("category", ["electronics", "jewelery", "men's clothing", "women's clothing"])
 
-def test_category_returns_products(all_products, base_url, category):
-    response = requests.get(f"{base_url}/products/category/{category}")
+def test_category_returns_products(base_url, category):
+    response = requests.get(f"{base_url}/products/category/{category}", headers=HEADERS)
     product = response.json()
 
     assert response.status_code == 200
